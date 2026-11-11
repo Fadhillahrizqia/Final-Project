@@ -1,16 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase";
 import Link from "next/link";
+import { supabase } from "../../lib/supabase";
 
 type Quiz = { id: string; title: string; created_at: string };
+
+// tanpa huruf/angka yang mirip (O/0, I/1)
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function generateCode() {
+  return Array.from(
+    { length: 6 },
+    () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]
+  ).join("");
+}
 
 export default function Dashboard() {
   const router = useRouter();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
+  const [starting, setStarting] = useState<string | null>(null);
 
   async function load() {
     const { data, error } = await supabase
@@ -42,8 +52,43 @@ export default function Dashboard() {
 
   async function deleteQuiz(id: string) {
     if (!confirm("Hapus kuis ini beserta semua soalnya?")) return;
-    await supabase.from("quizzes").delete().eq("id", id);
+    const { error } = await supabase.from("quizzes").delete().eq("id", id);
+    if (error) return setError(error.message);
     load();
+  }
+
+  async function startSession(quizId: string) {
+    if (starting) return;
+    setStarting(quizId);
+    setError("");
+
+    const { count } = await supabase
+      .from("questions")
+      .select("id", { count: "exact", head: true })
+      .eq("quiz_id", quizId);
+    if (!count) {
+      setStarting(null);
+      return setError("Kuis ini belum punya soal. Tambahkan soal dulu.");
+    }
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data, error } = await supabase
+        .from("sessions")
+        .insert({ quiz_id: quizId, join_code: generateCode() })
+        .select("id")
+        .single();
+      if (!error && data) {
+        router.push(`/host/${data.id}`);
+        return;
+      }
+      if (error?.code !== "23505") {
+        setStarting(null);
+        return setError(error?.message ?? "Gagal membuat sesi");
+      }
+      // 23505 = kode bentrok, coba kode lain
+    }
+    setStarting(null);
+    setError("Gagal membuat kode unik, coba lagi.");
   }
 
   async function logout() {
@@ -75,17 +120,26 @@ export default function Dashboard() {
         {quizzes.map((q) => (
           <li
             key={q.id}
-            className="border rounded p-3 flex justify-between items-center"
+            className="border rounded p-3 flex justify-between items-center gap-3"
           >
-               <Link href={`/quiz/${q.id}`} className="underline">
-                 {q.title}
-              </Link>
-            <button
-              onClick={() => deleteQuiz(q.id)}
-              className="text-red-600 text-sm"
-            >
-              Hapus
-            </button>
+            <Link href={`/quiz/${q.id}`} className="underline">
+              {q.title}
+            </Link>
+            <div className="flex items-center gap-3 text-sm">
+              <button
+                onClick={() => startSession(q.id)}
+                disabled={starting === q.id}
+                className="bg-green-600 text-white rounded px-3 py-1 disabled:opacity-50"
+              >
+                {starting === q.id ? "Membuat..." : "Mulai sesi"}
+              </button>
+              <button
+                onClick={() => deleteQuiz(q.id)}
+                className="text-red-600"
+              >
+                Hapus
+              </button>
+            </div>
           </li>
         ))}
         {quizzes.length === 0 && (
