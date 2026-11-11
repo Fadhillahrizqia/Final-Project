@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import Link from "next/link";
 
 type Quiz = { id: string; title: string; created_at: string };
 
@@ -76,7 +77,9 @@ export default function Dashboard() {
             key={q.id}
             className="border rounded p-3 flex justify-between items-center"
           >
-            <span>{q.title}</span>
+               <Link href={`/quiz/${q.id}`} className="underline">
+                 {q.title}
+              </Link>
             <button
               onClick={() => deleteQuiz(q.id)}
               className="text-red-600 text-sm"
