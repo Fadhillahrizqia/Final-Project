@@ -3,6 +3,7 @@
 Platform kuis live real-time untuk pembelajaran. Pengajar membuat kuis dan memulai sesi, peserta bergabung dengan kode tanpa akun, lalu menjawab soal yang tampil serentak dengan skor yang dihitung server.
 
 **Live demo:** https://final-project-blush-pi-36.vercel.app
+
 **Proyek:** Proyek Akhir MSIB Mandiri VINIX7, Divisi Web Development (Jalur VIP, Web EdTech)
 
 ## Masalah dan solusi
