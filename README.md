@@ -28,7 +28,7 @@ Next.js (App Router, TypeScript), Tailwind CSS, Supabase (PostgreSQL, Auth, Real
 
 ## Skema database
 Tabel: `quizzes`, `questions`, `sessions`, `participants`, `answers`.
-<tempel gambar ERD dari Schema Visualizer di sini>
+![ERD LiveQuiz](./ERD-livequiz.jpeg)
 
 ## Menjalankan secara lokal
 1. `git clone <url-repo>` lalu `cd livequiz`
