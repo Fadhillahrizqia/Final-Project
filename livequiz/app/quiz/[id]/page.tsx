@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
@@ -14,7 +14,7 @@ type Question = {
 
 const emptyOptions = ["", "", "", ""];
 
-export default function QuizEditor() {
+function QuizEditor() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [quizTitle, setQuizTitle] = useState("");
@@ -207,5 +207,13 @@ export default function QuizEditor() {
         )}
       </ol>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+      <QuizEditor />
+    </Suspense>
   );
 }

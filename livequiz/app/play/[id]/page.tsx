@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
@@ -18,7 +18,7 @@ type Result = {
 };
 type Row = { id: string; nickname: string; score: number };
 
-export default function PlayPage() {
+function PlayPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [participantId, setParticipantId] = useState<string | null>(null);
@@ -215,5 +215,13 @@ export default function PlayPage() {
         </section>
       )}
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+      <PlayPage />
+    </Suspense>
   );
 }

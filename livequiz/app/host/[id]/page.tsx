@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
@@ -20,7 +20,7 @@ type Question = {
   position: number;
 };
 
-export default function HostPage() {
+function HostPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [session, setSession] = useState<Session | null>(null);
@@ -226,5 +226,13 @@ export default function HostPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+      <HostPage />
+    </Suspense>
   );
 }
