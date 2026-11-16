@@ -106,113 +106,143 @@ function QuizEditor() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6 space-y-6">
-      <Link href="/dashboard" className="text-sm underline">
-        ← Kembali ke dashboard
-      </Link>
-      <h1 className="text-2xl font-bold">Soal: {quizTitle}</h1>
-
-      <form onSubmit={saveQuestion} className="space-y-3 border rounded p-4">
-        <h2 className="font-semibold">
-          {editingId ? "Edit soal" : "Tambah soal"}
-        </h2>
-        <textarea
-          className="w-full border rounded p-2"
-          placeholder="Tulis pertanyaan..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        {options.map((opt, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="correct"
-              checked={correct === i}
-              onChange={() => setCorrect(i)}
-              title="Tandai sebagai jawaban benar"
-            />
-            <input
-              className="flex-1 border rounded p-2"
-              placeholder={`Opsi ${String.fromCharCode(65 + i)}`}
-              value={opt}
-              onChange={(e) => {
-                const next = [...options];
-                next[i] = e.target.value;
-                setOptions(next);
-              }}
-            />
+    <main className="min-h-screen w-full">
+      <header className="bg-ink text-white">
+        <div className="mx-auto max-w-2xl space-y-2 p-6">
+          <Link href="/dashboard" className="text-sm text-white/70 underline">
+            ← Kembali ke dashboard
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1.5 rounded bg-gold" />
+            <h1 className="text-2xl font-bold">Soal: {quizTitle}</h1>
           </div>
-        ))}
-        <p className="text-xs text-gray-500">
-          Pilih tombol bulat di sebelah opsi yang menjadi jawaban benar.
-        </p>
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <div className="flex gap-2">
-          <button
-            disabled={saving}
-            className="bg-black text-white rounded px-4 py-2 disabled:opacity-50"
-          >
-            {saving
-              ? "Menyimpan..."
-              : editingId
-              ? "Simpan perubahan"
-              : "Tambah soal"}
-          </button>
-          {editingId && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="border rounded px-4 py-2"
-            >
-              Batal
-            </button>
-          )}
         </div>
-      </form>
+      </header>
 
-      <ol className="space-y-3">
-        {questions.map((q, idx) => (
-          <li key={q.id} className="border rounded p-3 space-y-2">
-            <p className="font-medium">
-              {idx + 1}. {q.text}
-            </p>
-            <ul className="text-sm space-y-1">
-              {q.options.map((o, i) => (
-                <li
-                  key={i}
-                  className={
-                    i === q.correct_index ? "font-bold text-green-700" : ""
-                  }
-                >
-                  {String.fromCharCode(65 + i)}. {o}
-                  {i === q.correct_index && " ✓"}
-                </li>
-              ))}
-            </ul>
-            <div className="flex gap-4 text-sm">
-              <button onClick={() => startEdit(q)} className="underline">
-                Edit
-              </button>
-              <button
-                onClick={() => deleteQuestion(q.id)}
-                className="text-red-600"
-              >
-                Hapus
-              </button>
+      <div className="mx-auto max-w-2xl space-y-6 p-6">
+        <form
+          onSubmit={saveQuestion}
+          className="space-y-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+        >
+          <h2 className="text-lg font-semibold">
+            {editingId ? "Edit soal" : "Tambah soal"}
+          </h2>
+          <textarea
+            className="w-full rounded-lg border border-gray-300 p-3"
+            placeholder="Tulis pertanyaan..."
+            aria-label="Teks pertanyaan"
+            rows={3}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          {options.map((opt, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="correct"
+                className="h-5 w-5 accent-[#1f5fbf]"
+                checked={correct === i}
+                onChange={() => setCorrect(i)}
+                aria-label={`Tandai opsi ${String.fromCharCode(65 + i)} sebagai jawaban benar`}
+              />
+              <input
+                className="flex-1 rounded-lg border border-gray-300 p-3"
+                placeholder={`Opsi ${String.fromCharCode(65 + i)}`}
+                aria-label={`Opsi ${String.fromCharCode(65 + i)}`}
+                value={opt}
+                onChange={(e) => {
+                  const next = [...options];
+                  next[i] = e.target.value;
+                  setOptions(next);
+                }}
+              />
             </div>
-          </li>
-        ))}
-        {questions.length === 0 && (
-          <p className="text-gray-500">Belum ada soal.</p>
-        )}
-      </ol>
+          ))}
+          <p className="text-xs text-gray-600">
+            Pilih tombol bulat di sebelah opsi yang menjadi jawaban benar.
+          </p>
+          {error && (
+            <p role="alert" className="text-sm text-red-700">
+              {error}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <button
+              disabled={saving}
+              className="rounded-lg bg-ink px-5 py-3 font-semibold text-white disabled:opacity-50"
+            >
+              {saving
+                ? "Menyimpan..."
+                : editingId
+                ? "Simpan perubahan"
+                : "Tambah soal"}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="rounded-lg border border-gray-300 px-5 py-3"
+              >
+                Batal
+              </button>
+            )}
+          </div>
+        </form>
+
+        <ol className="space-y-3">
+          {questions.map((q, idx) => (
+            <li
+              key={q.id}
+              className="space-y-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <p className="font-semibold">
+                {idx + 1}. {q.text}
+              </p>
+              <ul className="space-y-1 text-sm">
+                {q.options.map((o, i) => (
+                  <li
+                    key={i}
+                    className={
+                      i === q.correct_index
+                        ? "font-bold text-green-800"
+                        : "text-gray-700"
+                    }
+                  >
+                    {String.fromCharCode(65 + i)}. {o}
+                    {i === q.correct_index && " ✓"}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-4 text-sm">
+                <button
+                  onClick={() => startEdit(q)}
+                  className="font-medium text-brand underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteQuestion(q.id)}
+                  className="text-red-700"
+                >
+                  Hapus
+                </button>
+              </div>
+            </li>
+          ))}
+          {questions.length === 0 && (
+            <p className="text-gray-600">Belum ada soal.</p>
+          )}
+        </ol>
+      </div>
     </main>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+    <Suspense
+      fallback={<main className="min-h-screen p-6 text-gray-600">Memuat...</main>}
+    >
       <QuizEditor />
     </Suspense>
   );

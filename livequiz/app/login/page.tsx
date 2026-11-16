@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginPage() {
@@ -25,16 +26,25 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <h1 className="text-2xl font-bold">
+    <main className="flex min-h-screen w-full flex-col items-center justify-center gap-8 bg-ink p-6 text-white">
+      <div className="space-y-3 text-center">
+        <div className="mx-auto h-1.5 w-16 rounded bg-gold" />
+        <h1 className="text-4xl font-bold tracking-tight">
           {mode === "login" ? "Login Pengajar" : "Daftar Pengajar"}
         </h1>
+        <p className="text-white/70">Kelola kuis dan mulai sesi live</p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6"
+      >
         <input
           type="email"
           required
           placeholder="Email"
-          className="w-full border rounded p-2"
+          aria-label="Email"
+          className="w-full rounded-lg bg-white p-4 text-ink placeholder:text-gray-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -43,20 +53,25 @@ export default function LoginPage() {
           required
           minLength={6}
           placeholder="Password (min. 6 karakter)"
-          className="w-full border rounded p-2"
+          aria-label="Password"
+          className="w-full rounded-lg bg-white p-4 text-ink placeholder:text-gray-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {msg && <p className="text-red-600 text-sm">{msg}</p>}
+        {msg && (
+          <p role="alert" className="text-sm text-red-300">
+            {msg}
+          </p>
+        )}
         <button
           disabled={loading}
-          className="w-full bg-black text-white rounded p-2"
+          className="w-full rounded-lg bg-gold p-4 text-lg font-bold text-ink disabled:opacity-50"
         >
           {loading ? "Memproses..." : mode === "login" ? "Masuk" : "Daftar"}
         </button>
         <button
           type="button"
-          className="text-sm underline"
+          className="w-full text-sm text-white/70 underline"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
         >
           {mode === "login"
@@ -64,6 +79,10 @@ export default function LoginPage() {
             : "Sudah punya akun? Login"}
         </button>
       </form>
+
+      <Link href="/" className="text-sm text-white/70 underline">
+        ← Kembali ke halaman join
+      </Link>
     </main>
   );
 }

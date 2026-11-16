@@ -123,104 +123,142 @@ function PlayPage() {
 
   const q = state.question;
   const answered = result && q && result.questionId === q.id ? result : null;
+  const progress = state.total
+    ? (((state.index ?? 0) + 1) / state.total) * 100
+    : 0;
+  const myRow = board.find((p) => p.id === participantId);
+  const myRank = board.findIndex((p) => p.id === participantId) + 1;
 
   return (
-    <main className="min-h-screen max-w-md mx-auto p-6 space-y-6">
-      <header className="flex justify-between text-sm text-gray-600">
-        <span>{me?.nickname ?? "..."}</span>
-        <span className="font-semibold">{me?.score ?? 0} poin</span>
-      </header>
+    <main className="min-h-screen w-full bg-ink text-white">
+      <div className="mx-auto w-full max-w-md space-y-6 p-6">
+        <header className="flex items-center justify-between">
+          <span className="text-white/70">{me?.nickname ?? "..."}</span>
+          <span className="rounded-full bg-gold px-4 py-1 text-sm font-bold text-ink">
+            {me?.score ?? 0} poin
+          </span>
+        </header>
 
-      {state.status === "waiting" && (
-        <div className="text-center pt-20 space-y-2">
-          <p className="text-2xl font-bold">Kamu sudah masuk!</p>
-          <p className="text-gray-500">Menunggu pengajar memulai kuis...</p>
-        </div>
-      )}
-
-      {state.status === "live" && !q && (
-        <p className="text-center pt-20 text-gray-500">Menyiapkan soal...</p>
-      )}
-
-      {state.status === "live" && q && (
-        <section className="space-y-4">
-          <p className="text-sm text-gray-500">
-            Soal {(state.index ?? 0) + 1} dari {state.total}
-          </p>
-          <h1 className="text-xl font-bold">{q.text}</h1>
-
-          <div className="space-y-3">
-            {q.options.map((opt, i) => {
-              let style = "border";
-              if (answered) {
-                if (i === answered.correctIndex)
-                  style = "border-green-600 bg-green-100";
-                else if (i === answered.chosen)
-                  style = "border-red-600 bg-red-100";
-                else style = "border opacity-50";
-              }
-              return (
-                <button
-                  key={i}
-                  disabled={!!answered || sending}
-                  onClick={() => answer(i)}
-                  className={`w-full text-left rounded p-4 text-lg ${style}`}
-                >
-                  <span className="font-bold mr-2">
-                    {String.fromCharCode(65 + i)}.
-                  </span>
-                  {opt}
-                </button>
-              );
-            })}
+        {state.status === "waiting" && (
+          <div className="space-y-4 pt-24 text-center">
+            <div className="mx-auto h-4 w-4 animate-pulse rounded-full bg-gold" />
+            <p className="text-2xl font-bold">Kamu sudah masuk</p>
+            <p className="text-white/70">Menunggu pengajar memulai kuis...</p>
           </div>
+        )}
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+        {state.status === "live" && !q && (
+          <p className="pt-24 text-center text-white/70">Menyiapkan soal...</p>
+        )}
 
-          {answered && (
-            <div className="text-center space-y-1 pt-2">
-              <p
-                className={`text-xl font-bold ${
-                  answered.isCorrect ? "text-green-700" : "text-red-700"
-                }`}
-              >
-                {answered.isCorrect ? "Benar! +100" : "Salah"}
+        {state.status === "live" && q && (
+          <section className="space-y-6">
+            <div className="space-y-2">
+              <p className="text-sm text-white/70">
+                Soal {(state.index ?? 0) + 1} dari {state.total}
               </p>
-              <p className="text-gray-500">
-                Menunggu soal berikutnya dari pengajar...
-              </p>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full bg-gold transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
-          )}
-        </section>
-      )}
 
-      {state.status === "ended" && (
-        <section className="space-y-4">
-          <h1 className="text-2xl font-bold text-center">Kuis selesai</h1>
-          <ol className="space-y-2">
-            {board.map((p, i) => (
-              <li
-                key={p.id}
-                className={`border rounded px-3 py-2 flex justify-between ${
-                  p.id === participantId ? "bg-yellow-100 font-semibold" : ""
-                }`}
-              >
-                <span>
-                  {i + 1}. {p.nickname}
-                </span>
-                <span>{p.score} poin</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
+            <h1 className="text-2xl font-bold leading-snug">{q.text}</h1>
+
+            <div className="space-y-3">
+              {q.options.map((opt, i) => {
+                let style = "border-white/20 bg-white/5";
+                if (answered) {
+                  if (i === answered.correctIndex)
+                    style = "border-green-400 bg-green-500/20";
+                  else if (i === answered.chosen)
+                    style = "border-red-400 bg-red-500/20";
+                  else style = "border-white/10 bg-white/5 opacity-50";
+                }
+                return (
+                  <button
+                    key={i}
+                    disabled={!!answered || sending}
+                    onClick={() => answer(i)}
+                    className={`flex w-full items-center gap-4 rounded-xl border-2 p-4 text-left text-lg active:scale-[0.98] ${style}`}
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 font-bold">
+                      {String.fromCharCode(65 + i)}
+                    </span>
+                    <span>{opt}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {error && (
+              <p role="alert" className="text-sm text-red-300">
+                {error}
+              </p>
+            )}
+
+            {answered && (
+              <div className="space-y-1 pt-2 text-center">
+                <p
+                  className={`text-2xl font-bold ${
+                    answered.isCorrect ? "text-green-300" : "text-red-300"
+                  }`}
+                >
+                  {answered.isCorrect ? "Benar! +100" : "Salah"}
+                </p>
+                <p className="text-white/70">
+                  Menunggu soal berikutnya dari pengajar...
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {state.status === "ended" && (
+          <section className="space-y-6">
+            <h1 className="text-center text-3xl font-bold">Kuis selesai</h1>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+              <p className="text-white/70">Skor kamu</p>
+              <p className="text-6xl font-bold text-gold">
+                {myRow?.score ?? me?.score ?? 0}
+              </p>
+              {myRank > 0 && (
+                <p className="mt-1 text-white/70">
+                  Peringkat {myRank} dari {board.length}
+                </p>
+              )}
+            </div>
+            <ol className="space-y-2">
+              {board.map((p, i) => (
+                <li
+                  key={p.id}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 ${
+                    p.id === participantId
+                      ? "bg-gold font-bold text-ink"
+                      : "bg-white/5"
+                  }`}
+                >
+                  <span>
+                    {i + 1}. {p.nickname}
+                  </span>
+                  <span>{p.score} poin</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+      </div>
     </main>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+    <Suspense
+      fallback={<main className="min-h-screen bg-ink p-6 text-white/70">Memuat...</main>}
+    >
       <PlayPage />
     </Suspense>
   );

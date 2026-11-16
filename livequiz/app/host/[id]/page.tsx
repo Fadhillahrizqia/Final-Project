@@ -121,109 +121,132 @@ function HostPage() {
 
   if (!session) {
     return (
-      <main className="p-6">
-        {error ? <p className="text-red-600">{error}</p> : <p>Memuat sesi...</p>}
+      <main className="min-h-screen bg-ink p-6 text-white">
+        {error ? (
+          <p role="alert" className="text-red-300">{error}</p>
+        ) : (
+          <p className="text-white/70">Memuat sesi...</p>
+        )}
       </main>
     );
   }
 
   const current = questions[session.current_question];
   const isLast = session.current_question + 1 >= questions.length;
+  const statusLabel =
+    session.status === "waiting"
+      ? "Menunggu peserta"
+      : session.status === "live"
+      ? "Sedang berlangsung"
+      : "Selesai";
+  const statusStyle =
+    session.status === "live"
+      ? "bg-green-500/20 text-green-300"
+      : "bg-white/10 text-white";
 
   return (
-    <main className="max-w-2xl mx-auto p-6 space-y-6">
-      <Link href="/dashboard" className="text-sm underline">
-        ← Kembali ke dashboard
-      </Link>
+    <main className="min-h-screen w-full bg-ink text-white">
+      <div className="mx-auto max-w-3xl space-y-6 p-6">
+        <Link href="/dashboard" className="text-sm text-white/70 underline">
+          ← Kembali ke dashboard
+        </Link>
 
-      <div className="text-center border rounded p-6 space-y-2">
-        <p className="text-gray-500">Gabung di halaman utama dengan kode:</p>
-        <p className="text-6xl font-bold tracking-widest">{session.join_code}</p>
-        <p className="text-sm">
-          Status:{" "}
-          <span className="font-semibold">
-            {session.status === "waiting"
-              ? "Menunggu peserta"
-              : session.status === "live"
-              ? "Sedang berlangsung"
-              : "Selesai"}
-          </span>
-        </p>
-      </div>
-
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-
-      {session.status === "live" && current && (
-        <section className="border rounded p-4 space-y-3">
-          <p className="text-sm text-gray-500">
-            Soal {session.current_question + 1} dari {questions.length}
+        <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+          <p className="text-white/70">Gabung di halaman utama dengan kode</p>
+          <p className="text-7xl font-bold tracking-[0.25em] text-gold sm:text-8xl">
+            {session.join_code}
           </p>
-          <h2 className="text-xl font-bold">{current.text}</h2>
-          <ul className="space-y-1">
-            {current.options.map((o, i) => (
+          <span
+            className={`inline-block rounded-full px-4 py-1 text-sm font-semibold ${statusStyle}`}
+          >
+            {statusLabel}
+          </span>
+        </div>
+
+        {error && (
+          <p role="alert" className="text-sm text-red-300">
+            {error}
+          </p>
+        )}
+
+        {session.status === "live" && current && (
+          <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+            <p className="text-sm text-white/70">
+              Soal {session.current_question + 1} dari {questions.length}
+            </p>
+            <h2 className="text-2xl font-bold">{current.text}</h2>
+            <ul className="space-y-1 text-lg">
+              {current.options.map((o, i) => (
+                <li
+                  key={i}
+                  className={
+                    i === current.correct_index
+                      ? "font-bold text-green-300"
+                      : "text-white/80"
+                  }
+                >
+                  {String.fromCharCode(65 + i)}. {o}
+                  {i === current.correct_index && " ✓"}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">
+            {session.status === "ended" ? "Hasil akhir" : "Peserta"} (
+            {participants.length})
+          </h2>
+          <ol className="space-y-2">
+            {participants.map((p, i) => (
               <li
-                key={i}
-                className={
-                  i === current.correct_index ? "font-bold text-green-700" : ""
-                }
+                key={p.id}
+                className={`flex items-center justify-between rounded-xl px-4 py-3 ${
+                  session.status === "ended" && i === 0
+                    ? "bg-gold font-bold text-ink"
+                    : "bg-white/5"
+                }`}
               >
-                {String.fromCharCode(65 + i)}. {o}
-                {i === current.correct_index && " ✓"}
+                <span>
+                  {session.status !== "waiting" && `${i + 1}. `}
+                  {p.nickname}
+                </span>
+                <span>{p.score} poin</span>
               </li>
             ))}
-          </ul>
+            {participants.length === 0 && (
+              <p className="text-white/70">Belum ada peserta yang bergabung.</p>
+            )}
+          </ol>
         </section>
-      )}
 
-      <section className="space-y-2">
-        <h2 className="font-semibold">
-          {session.status === "ended" ? "Hasil akhir" : "Peserta"} (
-          {participants.length})
-        </h2>
-        <ol className="space-y-1">
-          {participants.map((p, i) => (
-            <li
-              key={p.id}
-              className="border rounded px-3 py-2 flex justify-between"
+        <div className="flex flex-wrap gap-3">
+          {session.status === "waiting" && (
+            <button
+              onClick={startQuiz}
+              className="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white"
             >
-              <span>
-                {session.status !== "waiting" && `${i + 1}. `}
-                {p.nickname}
-              </span>
-              <span className="text-gray-500">{p.score} poin</span>
-            </li>
-          ))}
-          {participants.length === 0 && (
-            <p className="text-gray-500">Belum ada peserta yang bergabung.</p>
+              Mulai kuis
+            </button>
           )}
-        </ol>
-      </section>
-
-      <div className="flex gap-3">
-        {session.status === "waiting" && (
-          <button
-            onClick={startQuiz}
-            className="bg-green-600 text-white rounded px-4 py-2"
-          >
-            Mulai kuis
-          </button>
-        )}
-        {session.status === "live" && (
-          <button
-            onClick={nextQuestion}
-            className="bg-black text-white rounded px-4 py-2"
-          >
-            {isLast ? "Selesai & lihat hasil" : "Soal berikutnya"}
-          </button>
-        )}
-        {session.status !== "ended" && (
-          <button
-            onClick={endSession}
-            className="border border-red-600 text-red-600 rounded px-4 py-2"
-          >
-            Akhiri sesi
-          </button>
-        )}
+          {session.status === "live" && (
+            <button
+              onClick={nextQuestion}
+              className="rounded-lg bg-gold px-5 py-3 font-bold text-ink"
+            >
+              {isLast ? "Selesai & lihat hasil" : "Soal berikutnya"}
+            </button>
+          )}
+          {session.status !== "ended" && (
+            <button
+              onClick={endSession}
+              className="rounded-lg border border-red-300 px-5 py-3 font-semibold text-red-300"
+            >
+              Akhiri sesi
+            </button>
+          )}
+        </div>
       </div>
     </main>
   );
@@ -231,7 +254,9 @@ function HostPage() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<main className="p-6">Memuat...</main>}>
+    <Suspense
+      fallback={<main className="min-h-screen bg-ink p-6 text-white/70">Memuat...</main>}
+    >
       <HostPage />
     </Suspense>
   );

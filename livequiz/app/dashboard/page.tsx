@@ -78,6 +78,7 @@ export default function Dashboard() {
         .select("id")
         .single();
       if (!error && data) {
+        setStarting(null); // reset agar tombol tidak macet saat kembali ke halaman ini
         router.push(`/host/${data.id}`);
         return;
       }
@@ -97,55 +98,72 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Dashboard Kuis</h1>
-        <button onClick={logout} className="text-sm underline">
-          Keluar
-        </button>
-      </div>
+    <main className="min-h-screen w-full">
+      <header className="bg-ink text-white">
+        <div className="mx-auto flex max-w-2xl items-center justify-between p-6">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1.5 rounded bg-gold" />
+            <h1 className="text-2xl font-bold">Dashboard Kuis</h1>
+          </div>
+          <button onClick={logout} className="text-sm text-white/70 underline">
+            Keluar
+          </button>
+        </div>
+      </header>
 
-      <form onSubmit={createQuiz} className="flex gap-2">
-        <input
-          className="flex-1 border rounded p-2"
-          placeholder="Judul kuis baru"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <button className="bg-black text-white rounded px-4">Buat</button>
-      </form>
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-
-      <ul className="space-y-2">
-        {quizzes.map((q) => (
-          <li
-            key={q.id}
-            className="border rounded p-3 flex justify-between items-center gap-3"
-          >
-            <Link href={`/quiz/${q.id}`} className="underline">
-              {q.title}
-            </Link>
-            <div className="flex items-center gap-3 text-sm">
-              <button
-                onClick={() => startSession(q.id)}
-                disabled={starting === q.id}
-                className="bg-green-600 text-white rounded px-3 py-1 disabled:opacity-50"
-              >
-                {starting === q.id ? "Membuat..." : "Mulai sesi"}
-              </button>
-              <button
-                onClick={() => deleteQuiz(q.id)}
-                className="text-red-600"
-              >
-                Hapus
-              </button>
-            </div>
-          </li>
-        ))}
-        {quizzes.length === 0 && (
-          <p className="text-gray-500">Belum ada kuis.</p>
+      <div className="mx-auto max-w-2xl space-y-6 p-6">
+        <form onSubmit={createQuiz} className="flex gap-2">
+          <input
+            className="flex-1 rounded-lg border border-gray-300 p-3"
+            placeholder="Judul kuis baru"
+            aria-label="Judul kuis baru"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <button className="rounded-lg bg-ink px-5 font-semibold text-white">
+            Buat
+          </button>
+        </form>
+        {error && (
+          <p role="alert" className="text-sm text-red-700">
+            {error}
+          </p>
         )}
-      </ul>
+
+        <ul className="space-y-3">
+          {quizzes.map((q) => (
+            <li
+              key={q.id}
+              className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <Link
+                href={`/quiz/${q.id}`}
+                className="font-semibold text-ink hover:underline"
+              >
+                {q.title}
+              </Link>
+              <div className="flex items-center gap-3 text-sm">
+                <button
+                  onClick={() => startSession(q.id)}
+                  disabled={starting === q.id}
+                  className="rounded-lg bg-green-700 px-3 py-2 font-semibold text-white disabled:opacity-50"
+                >
+                  {starting === q.id ? "Membuat..." : "Mulai sesi"}
+                </button>
+                <button
+                  onClick={() => deleteQuiz(q.id)}
+                  className="text-red-700"
+                >
+                  Hapus
+                </button>
+              </div>
+            </li>
+          ))}
+          {quizzes.length === 0 && (
+            <p className="text-gray-600">Belum ada kuis. Buat yang pertama di atas.</p>
+          )}
+        </ul>
+      </div>
     </main>
   );
 }
