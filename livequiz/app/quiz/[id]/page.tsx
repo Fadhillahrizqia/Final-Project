@@ -140,7 +140,7 @@ function QuizEditor() {
               <input
                 type="radio"
                 name="correct"
-                className="h-5 w-5 accent-[#1f5fbf]"
+                className="h-5 w-5 accent-brand"
                 checked={correct === i}
                 onChange={() => setCorrect(i)}
                 aria-label={`Tandai opsi ${String.fromCharCode(65 + i)} sebagai jawaban benar`}

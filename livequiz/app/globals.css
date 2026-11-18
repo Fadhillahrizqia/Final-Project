@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f5f9;
-  --foreground: #0b1f3a;
-  --brand-ink: #0b1f3a;
-  --brand-gold: #f5c518;
-  --brand-blue: #1f5fbf;
+  --background: #f6f4fb;
+  --foreground: #2b1b5a;
+  --brand-ink: #2b1b5a;
+  --brand-gold: #5eead4;
+  --brand-blue: #6d28d9;
 }
 
 @theme inline {
@@ -14,14 +14,16 @@
   --color-ink: var(--brand-ink);
   --color-gold: var(--brand-gold);
   --color-brand: var(--brand-blue);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 input,
@@ -37,3 +39,12 @@ button {
 button:disabled {
   cursor: not-allowed;
 }
+
+/* Cadangan: warna merek selalu terbaca walau tema Tailwind belum dimuat ulang */
+.bg-ink { background-color: var(--brand-ink); }
+.text-ink { color: var(--brand-ink); }
+.bg-gold { background-color: var(--brand-gold); }
+.text-gold { color: var(--brand-gold); }
+.text-brand { color: var(--brand-blue); }
+.accent-brand { accent-color: var(--brand-blue); }
+.bg-brand { background-color: var(--brand-blue); }

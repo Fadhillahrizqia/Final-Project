@@ -146,7 +146,7 @@ export default function Dashboard() {
                 <button
                   onClick={() => startSession(q.id)}
                   disabled={starting === q.id}
-                  className="rounded-lg bg-green-700 px-3 py-2 font-semibold text-white disabled:opacity-50"
+                  className="rounded-lg bg-brand px-3 py-2 font-semibold text-white disabled:opacity-50"
                 >
                   {starting === q.id ? "Membuat..." : "Mulai sesi"}
                 </button>

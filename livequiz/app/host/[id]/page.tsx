@@ -225,7 +225,7 @@ function HostPage() {
           {session.status === "waiting" && (
             <button
               onClick={startQuiz}
-              className="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white"
+              className="rounded-lg bg-gold px-5 py-3 font-bold text-ink"
             >
               Mulai kuis
             </button>

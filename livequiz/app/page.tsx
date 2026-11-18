@@ -35,9 +35,9 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0b1f3a] text-white flex flex-col items-center justify-center p-6 gap-8">
+    <main className="min-h-screen bg-ink text-white flex flex-col items-center justify-center p-6 gap-8">
       <div className="text-center space-y-3">
-        <div className="mx-auto h-1.5 w-16 rounded bg-[#f5c518]" />
+        <div className="mx-auto h-1.5 w-16 rounded bg-gold" />
         <h1 className="text-5xl font-bold tracking-tight">LiveQuiz</h1>
         <p className="text-white/70">
           Masukkan kode dari pengajar untuk bergabung
@@ -53,7 +53,7 @@ export default function Home() {
           maxLength={6}
           placeholder="Kode sesi"
           aria-label="Kode sesi"
-          className="w-full rounded-lg bg-white p-4 text-center text-2xl font-bold uppercase tracking-[0.4em] text-[#0b1f3a] placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-gray-500"
+          className="w-full rounded-lg bg-white p-4 text-center text-2xl font-bold uppercase tracking-[0.4em] text-ink placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-gray-500"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
         />
@@ -62,7 +62,7 @@ export default function Home() {
           maxLength={20}
           placeholder="Nama panggilan"
           aria-label="Nama panggilan"
-          className="w-full rounded-lg bg-white p-4 text-[#0b1f3a] placeholder:text-gray-500"
+          className="w-full rounded-lg bg-white p-4 text-ink placeholder:text-gray-500"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
         />
@@ -73,7 +73,7 @@ export default function Home() {
         )}
         <button
           disabled={loading}
-          className="w-full rounded-lg bg-[#f5c518] p-4 text-lg font-bold text-[#0b1f3a] disabled:opacity-50"
+          className="w-full rounded-lg bg-gold p-4 text-lg font-bold text-ink disabled:opacity-50"
         >
           {loading ? "Bergabung..." : "Gabung"}
         </button>
